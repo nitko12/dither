@@ -25,13 +25,13 @@
 // };
 
 // Atkinson
-int coef = 8;
-int kernelX = 1;
-unsigned char kernel[3][4] = {
-    {0, 0, 1, 1},
-    {1, 1, 1, 0},
-    {0, 1, 0, 0},
-};
+// int coef = 8;
+// int kernelX = 1;
+// unsigned char kernel[3][4] = {
+//     {0, 0, 1, 1},
+//     {1, 1, 1, 0},
+//     {0, 1, 0, 0},
+// };
 
 // Burkes
 // int coef = 32;
@@ -43,13 +43,13 @@ unsigned char kernel[3][4] = {
 // };
 
 // Stucki
-// int coef = 42;
-// int kernelX = 2;
-// unsigned char kernel[3][5] = {
-//     {0, 0, 0, 8, 4},
-//     {2, 4, 8, 4, 2},
-//     {1, 2, 4, 2, 1},
-// };
+int coef = 42;
+int kernelX = 2;
+unsigned char kernel[3][5] = {
+    {0, 0, 0, 8, 4},
+    {2, 4, 8, 4, 2},
+    {1, 2, 4, 2, 1},
+};
 
 // Sierra lite
 // int coef = 4;
@@ -63,14 +63,37 @@ unsigned char kernel[3][4] = {
 int kernelWidth = sizeof kernel[0] / sizeof kernel[0][0];
 int kernelHeight = sizeof kernel / sizeof kernel[0];
 
-unsigned int pallete[] = {
-    0x000000,
-    0xFFFFFF,
-    0x00FF00,
-    0x0000FF,
-    0xFF0000,
-    0xFFFF00,
-    0xFF8000,
+unsigned int pallete[10][10] = {
+    {
+        0xFF0000,
+        0xef3434,
+        0xe56363,
+        0xe08d8d,
+        0xe0b1b1,
+        0xe5d0d0,
+        0xefeaea,
+        0xFFFFFF,
+    },
+    {
+        0x00FF00,
+        0x3aaa0d,
+        0x83cb22,
+        0xbed053,
+        0xd0c68a,
+        0xd8cbb9,
+        0xe8e2e0,
+        0xFFFFFF,
+    },
+    {
+        0x0000FF,
+        0x349fef,
+        0x63e5d2,
+        0x8de0a4,
+        0xbee0b1,
+        0xe2e5d0,
+        0xefedea,
+        0xFFFFFF,
+    },
 };
 
 int main()
@@ -96,6 +119,7 @@ int main()
 
     unsigned char *ptr = pixelsIn;
     unsigned char *ptrOut = pixels;
+    printf("uint8_t img_buf = {");
     for (int i = 0; i < height; ++i)
     {
         for (int j = 0; j < width; ++j)
@@ -113,11 +137,12 @@ int main()
 
             int md = 1 << 30,
                 mi = 0;
-            for (int k = 0; k < (sizeof pallete / sizeof pallete[0]); ++k)
+
+            for (int k = 0; k < 8; ++k)
             {
-                int rp = (int)(pallete[k] >> 16 & 0xFF);
-                int gp = (int)(pallete[k] >> 8 & 0xFF);
-                int bp = (int)(pallete[k] >> 0 & 0xFF);
+                int rp = (int)(pallete[(i % 3 + j) % 3][k] >> 16 & 0xFF);
+                int gp = (int)(pallete[(i % 3 + j) % 3][k] >> 8 & 0xFF);
+                int bp = (int)(pallete[(i % 3 + j) % 3][k] >> 0 & 0xFF);
 
                 int d = (rp - r) * (rp - r) + (gp - g) * (gp - g) + (bp - b) * (bp - b);
 
@@ -125,9 +150,9 @@ int main()
                     md = d, mi = k;
             }
 
-            int rErr = r - (int)(*ptrOut++ = pallete[mi] >> 16 & 0xFF);
-            int gErr = g - (int)(*ptrOut++ = pallete[mi] >> 8 & 0xFF);
-            int bErr = b - (int)(*ptrOut++ = pallete[mi] >> 0 & 0xFF);
+            int rErr = r - (int)(*ptrOut++ = pallete[(i % 3 + j) % 3][mi] >> 16 & 0xFF);
+            int gErr = g - (int)(*ptrOut++ = pallete[(i % 3 + j) % 3][mi] >> 8 & 0xFF);
+            int bErr = b - (int)(*ptrOut++ = pallete[(i % 3 + j) % 3][mi] >> 0 & 0xFF);
             *ptrOut++ = 0xFF;
 
             for (int k = 0; k < kernelHeight; ++k)
@@ -141,8 +166,12 @@ int main()
                     bBuf[(i + k) % kernelHeight][j + l] += (kernel[k][l] * bErr) / coef;
                 }
             }
+
+            printf("%d,", 7 - mi);
         }
+        printf("\n");
     }
+    printf("};\n");
 
     err = loadbmp_encode_file("out3.bmp", pixels, width, height, LOADBMP_RGBA);
     if (err)
