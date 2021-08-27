@@ -140,9 +140,9 @@ int main()
 
             for (int k = 0; k < 8; ++k)
             {
-                int rp = (int)(pallete[(i % 3 + j) % 3][k] >> 16 & 0xFF);
-                int gp = (int)(pallete[(i % 3 + j) % 3][k] >> 8 & 0xFF);
-                int bp = (int)(pallete[(i % 3 + j) % 3][k] >> 0 & 0xFF);
+                int rp = (int)(pallete[(i % 3 + 2 - j % 3) % 3][k] >> 16 & 0xFF);
+                int gp = (int)(pallete[(i % 3 + 2 - j % 3) % 3][k] >> 8 & 0xFF);
+                int bp = (int)(pallete[(i % 3 + 2 - j % 3) % 3][k] >> 0 & 0xFF);
 
                 int d = (rp - r) * (rp - r) + (gp - g) * (gp - g) + (bp - b) * (bp - b);
 
@@ -150,9 +150,9 @@ int main()
                     md = d, mi = k;
             }
 
-            int rErr = r - (int)(*ptrOut++ = pallete[(i % 3 + j) % 3][mi] >> 16 & 0xFF);
-            int gErr = g - (int)(*ptrOut++ = pallete[(i % 3 + j) % 3][mi] >> 8 & 0xFF);
-            int bErr = b - (int)(*ptrOut++ = pallete[(i % 3 + j) % 3][mi] >> 0 & 0xFF);
+            int rErr = r - (int)(*ptrOut++ = pallete[(i % 3 + 2 - j % 3) % 3][mi] >> 16 & 0xFF);
+            int gErr = g - (int)(*ptrOut++ = pallete[(i % 3 + 2 - j % 3) % 3][mi] >> 8 & 0xFF);
+            int bErr = b - (int)(*ptrOut++ = pallete[(i % 3 + 2 - j % 3) % 3][mi] >> 0 & 0xFF);
             *ptrOut++ = 0xFF;
 
             for (int k = 0; k < kernelHeight; ++k)
